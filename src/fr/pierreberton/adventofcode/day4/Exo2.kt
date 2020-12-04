@@ -5,7 +5,7 @@ import java.nio.file.Files
 import java.util.*
 import kotlin.collections.ArrayList
 
-class Exo1 {
+class Exo2 {
     companion object {
         @JvmStatic
         fun main(vararg args: String) {
@@ -13,7 +13,7 @@ class Exo1 {
             val passports = ArrayList<MutableMap<FieldType, String>>()
             passports.add(EnumMap(FieldType::class.java))
 
-            Files.readAllLines(File(Exo1::class.java.getResource("./day4.input").path).toPath())
+            Files.readAllLines(File(Exo2::class.java.getResource("./day4.input").path).toPath())
                 .forEach { line ->
                     if (line.isBlank()) {
                         passports.add(EnumMap(FieldType::class.java))
@@ -30,7 +30,8 @@ class Exo1 {
             val nbValidPassports = passports.filter {
                 (it.keys.size == FieldType.values().size ||
                  ((it.keys.size == (FieldType.values().size - 1)) &&
-                  !it.keys.contains(FieldType.CID)))
+                  !it.keys.contains(FieldType.CID))) &&
+                (it.filter { a -> a.key.isValid(a.value) }.size == it.keys.size)
             }.size
 
             println(nbValidPassports)
