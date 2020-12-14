@@ -10,22 +10,43 @@ class Exo2 {
         @JvmStatic
         fun main(vararg args: String) {
 
-            val lines = Files.readAllLines(File(Exo2::class.java.getResource("./example.input").path).toPath())
+            val lines = Files.readAllLines(
+                File(Exo2::class.java.getResource("./day13.input").path).toPath()
+            )
 
             val busLines = lines.last().split(",").map { if (it == "x") null else it.toLong() }
 
-            val busAndFirstStartFromZero = mutableMapOf<Int, MutableList<BigInteger>>()
+            val busAndOffset = mutableListOf<Pair<BigInteger, BigInteger>>()
             var cpt = 0L
             busLines.forEach {
                 if (it != null) {
-                    busAndFirstStartFromZero[it.toInt()] = mutableListOf()
-                    busAndFirstStartFromZero[it.toInt()]?.add(BigInteger.valueOf(cpt))
+                    busAndOffset.add(Pair(it.toBigInteger(), cpt.toBigInteger()))
                 }
                 cpt++
             }
-            
+
+            var n = BigInteger.ONE
+            busAndOffset.forEach { n *= it.first }
+
+            var x = BigInteger.ZERO
+            busAndOffset.forEach {
+                val nr = n / it.first
+                val (_, _, v) = gcd(it.first, nr)
+                val e = nr * v
+                x += e * (BigInteger.ZERO - it.second)
+            }
+
+            println(x % n)
 
         }
 
+        private fun gcd(p: BigInteger, q: BigInteger): Triple<BigInteger, BigInteger, BigInteger> {
+            if (q == BigInteger.ZERO) return Triple(p, BigInteger.ONE, BigInteger.ZERO)
+            val vals = gcd(q, p % q)
+            val d = vals.first
+            val a = vals.third
+            val b = vals.second - p / q * vals.third
+            return Triple(d, a, b)
+        }
     }
 }
